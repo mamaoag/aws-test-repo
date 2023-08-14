@@ -1,0 +1,43 @@
+name: Sync to CodeCommit
+
+on:
+  push:
+    # Trigger if there are changes in develop, staging, and main branches only
+    branches: [develop, staging, master]
+permissions:
+  id-token: write
+  contents: read # This is required for actions/checkout
+
+jobs:
+  deploy:
+    name: Upload to AWS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+      - name: Set environment profile
+        run: |
+          branch="$(echo $GITHUB_REF | cut -d'/' -f 3)"
+          if [ $branch = 'develop' ]; then
+              echo "PROFILE=dev" >> "$GITHUB_ENV"
+              echo "IAM_ROLE_ARN=${{ secrets.CI_DEV_DEPLOY_IAM_ROLE }}" >> "$GITHUB_ENV"
+          elif [ $branch = 'staging' ]; then
+              echo "PROFILE=stg" >> "$GITHUB_ENV"
+              echo "IAM_ROLE_ARN=${{ secrets.CI_STG_DEPLOY_IAM_ROLE }}" >> "$GITHUB_ENV"
+          elif [ $branch = 'main' ]; then
+              echo "PROFILE=prd" >> "$GITHUB_ENV"
+              echo "IAM_ROLE_ARN=${{ secrets.CI_PRD_DEPLOY_IAM_ROLE }}" >> "$GITHUB_ENV"
+          fi
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{env.CI_REPO_REGION}}
+          role-to-assume: ${{env.IAM_ROLE_ARN}}
+          role-duration-seconds: 900
+          role-session-name: GitHubActions-${{ github.run_id }}
+
+      - name: Sync up to CodeCommit
+        uses: tsgit18/sync-up-to-codecommit-action@v1
+        with:
+          repository_name: ${{env.CI_REPO_NAME}}
+          aws_region: ${{env.CI_REPO_REGION}}
