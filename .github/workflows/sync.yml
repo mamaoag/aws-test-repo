@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
+        with:
+          set-safe-directory: '*'
       - name: Set environment profile
         run: |
           branch="$(echo $GITHUB_REF | cut -d'/' -f 3)"
@@ -39,6 +41,5 @@ jobs:
       - name: Sync up to CodeCommit
         uses: tsgit18/sync-up-to-codecommit-action@v1
         with:
-          set-safe-directory: '*'
           repository_name: ${{secrets.CI_REPO_NAME}}
           aws_region: ${{secrets.CI_REPO_REGION}}
