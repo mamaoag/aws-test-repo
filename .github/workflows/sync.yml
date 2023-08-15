@@ -32,7 +32,6 @@ jobs:
         with:
           aws-region: ${{secrets.CI_REPO_REGION}}
           role-to-assume: ${{env.IAM_ROLE_ARN}}
-          role-duration-seconds: 900
           role-session-name: GitHubActions-${{ github.run_id }}
 
       - name: Sync up to CodeCommit
