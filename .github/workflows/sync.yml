@@ -38,8 +38,8 @@ jobs:
           role-duration-seconds: 900
           role-session-name: GitHubActions-${{ github.run_id }}
 
-      - name: Sync up to CodeCommit
-        uses: hectorcoy/aws-codecommit-syncv2@1.0.15
+      - name: Sync repository to AWS CodeCommit
+        uses: mamaoag/sync-repo-to-codecommit@v1
         with:
           repository_name: ${{secrets.CI_REPO_NAME}}
           aws_region: ${{secrets.CI_REPO_REGION}}
