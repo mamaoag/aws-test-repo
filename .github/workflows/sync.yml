@@ -24,7 +24,7 @@ jobs:
           elif [ $branch = 'staging' ]; then
               echo "PROFILE=stg" >> "$GITHUB_ENV"
               echo "IAM_ROLE_ARN=${{ secrets.CI_STG_DEPLOY_IAM_ROLE }}" >> "$GITHUB_ENV"
-          elif [ $branch = 'main' ]; then
+          elif [ $branch = 'master' ]; then
               echo "PROFILE=prd" >> "$GITHUB_ENV"
               echo "IAM_ROLE_ARN=${{ secrets.CI_PRD_DEPLOY_IAM_ROLE }}" >> "$GITHUB_ENV"
           fi
